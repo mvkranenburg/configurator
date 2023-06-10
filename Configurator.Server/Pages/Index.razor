@@ -1,3 +1,27 @@
-﻿@page "/"
+@page "/"
+<PageTitle>Configurator app</PageTitle>
+<RadzenRow Gap="5" RowGap="5">
+    <RadzenColumn Size="12">
+        <RadzenText Text="Configurator app" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+        <RadzenCard Style="margin-top: 40px; padding: 20px 40px 40px;">
+            <RadzenRow>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenIcon Icon="sports_esports" Style="margin-top: 20px; width: 48px; height: 48px; font-size: 48px; color: var(--rz-text-title-color);"></RadzenIcon>
+                    <RadzenText Text="Controller description" TextStyle="Radzen.Blazor.TextStyle.DisplayH6" TagName="Radzen.Blazor.TagName.H3"></RadzenText>
+                    <RadzenLink Text="Generate XML controller model" Path="/controller-description" Icon="east" Style="font-size: 18px"></RadzenLink>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenIcon Icon="smart_button" Style="margin-top: 20px; width: 48px; height: 48px; font-size: 48px; color: var(--rz-text-title-color);"></RadzenIcon>
+                    <RadzenText Text="System description" TextStyle="Radzen.Blazor.TextStyle.DisplayH6" TagName="Radzen.Blazor.TagName.H3"></RadzenText>
+                    <RadzenLink Text="Generate XML system model" Path="/system-description" Icon="east" Style="font-size: 18px"></RadzenLink>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenIcon Icon="code" Style="margin-top: 20px; width: 48px; height: 48px; font-size: 48px; color: var(--rz-text-title-color);"></RadzenIcon>
+                    <RadzenText Text="Processing blocks" TextStyle="Radzen.Blazor.TextStyle.DisplayH6" TagName="Radzen.Blazor.TagName.H3"></RadzenText>
+                    <RadzenLink Text="Generate C++ template" Path="/processing-block" Icon="east" Style="font-size: 18px"></RadzenLink>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
 
-<h1>Hello, world!</h1>
