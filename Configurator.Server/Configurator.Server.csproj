@@ -10,4 +10,8 @@
     <PackageReference Include="Radzen.Blazor" Version="*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Configurator.Models\Configurator.Models.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Configurator.Models;
 
 namespace Configurator.Server.Controllers
 {
@@ -27,10 +29,17 @@ namespace Configurator.Server.Controllers
             {
                 // TODO: Validate IFormFile input against XSD
                 var esi = XDocument.Load(file.OpenReadStream());
-                var deviceTypes = esi.XPathSelectElements("//Descriptions/Devices/Device/Type").Select(e => e.Value);
-                foreach (var deviceType in deviceTypes)
+                var devices = esi.XPathSelectElements("//Descriptions/Devices/Device")
+                                     .Select(e => new Device
+                                     {
+                                         Type = e.Element("Type").Value,
+                                         Name = e.Elements("Name").Where(n => (string)n.Attribute("LcId") == "1033").FirstOrDefault().Value,
+                                         ProductCode = uint.Parse(((string)e.Element("Type").Attribute("ProductCode")).Substring(2), NumberStyles.HexNumber),
+                                         RevisionNo = uint.Parse(((string)e.Element("Type").Attribute("RevisionNo")).Substring(2), NumberStyles.HexNumber)
+                                     });
+                foreach (var device in devices)
                 {
-                    _logger.LogDebug("Device: {deviceType}", deviceType);
+                    _logger.LogDebug(device.ToString());
                 }
 
                 // Put your code here
