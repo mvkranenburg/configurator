@@ -1,0 +1,16 @@
+@page "/select-device-dialog"
+
+<RadzenSteps>
+    <Steps>
+        <RadzenStepsItem Text="Upload ESI file">
+            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">1. Upload an ESI file to continue</RadzenText>
+            <RadzenUpload Url="upload/esi" Accept="text/xml"  Progress=@TrackProgress Complete=@CompleteUpload />
+            <RadzenProgressBar Value=@progress class="mt-4" Visible=@showProgress />
+            <RadzenButton Text="Cancel" Click=@(args => CancelUpload()) class="d-block mt-4" Visible=@showProgress />
+            <RadzenLabel Visible=@showComplete class="mt-4" Text=@completionMessage />
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Select EtherCAT device">
+            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">1. Select an EtherCAT device to continue</RadzenText>
+        </RadzenStepsItem>
+    </Steps>
+</RadzenSteps>
