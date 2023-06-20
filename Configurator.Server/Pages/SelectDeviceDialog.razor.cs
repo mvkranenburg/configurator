@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Radzen.Blazor;
 
 namespace Configurator.Server.Pages
 {
@@ -30,38 +25,69 @@ namespace Configurator.Server.Pages
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
-        int progress;
-        bool showProgress;
-        bool showComplete;
-        string completionMessage;
+        Shared.EventConsole console;
+
+        // Progress variables
+        int progress = 0;
+        bool showProgress = false;
         bool cancelUpload = false;
 
-        void CompleteUpload(UploadCompleteEventArgs args)
+        // Progress variables
+        bool showComplete = false;
+        string completeMessage = string.Empty;
+
+        // Error variables
+        bool showError = false;
+        string errorMessage = string.Empty;
+
+        void OnError(UploadErrorEventArgs args)
         {
-            if (!args.Cancelled)
-                completionMessage = "Upload Complete!";
-            else
-                completionMessage = "Upload Cancelled!";
+            console.Log($"OnError: {args.Message}");
+
+            errorMessage = args.Message;
 
             showProgress = false;
-            showComplete = true;
+            showComplete = false;
+            showError = true;
         }
 
-        void TrackProgress(UploadProgressArgs args)
+        void OnComplete(UploadCompleteEventArgs args)
         {
-            showProgress = true;
-            showComplete = false;
+            console.Log($"OnComplete: Cancelled={args.Cancelled}, Json={args.RawResponse}");
+
+            if (!args.Cancelled)
+            {
+                var node = JsonNode.Parse(args.RawResponse);
+                var name = node["name"].GetValue<string>();
+                var size = node["size"].GetValue<uint>();
+                var numDevices = node["numDevices"].GetValue<uint>();
+
+                completeMessage = $"Loaded {name} ({size / 1024} KB) containing {numDevices} EtherCAT device{(numDevices == 1 ? "" : "s")}.";
+            }
+
+            showProgress = false;
+            showComplete = !args.Cancelled;
+            showError = false;
+        }
+
+        void OnProgress(UploadProgressArgs args)
+        {
+            console.Log($"OnProgress: Progress={args.Progress}, Cancel={cancelUpload}");
+
+            args.Cancel = cancelUpload;
+            cancelUpload = false;
+
             progress = args.Progress;
 
-            // cancel upload
-            args.Cancel = cancelUpload;
-
-            // reset cancel flag
-            cancelUpload = false;
+            showProgress = true;
+            showComplete = false;
+            showError = false;
         }
 
         void CancelUpload()
         {
+            console.Log("CancelUpload");
+
             cancelUpload = true;
         }
     }
