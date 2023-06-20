@@ -19,13 +19,9 @@ namespace Configurator.Server.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
 
-        public UploadController(IWebHostEnvironment environment, ILogger<UploadController> logger)
-        {
-            _environment = environment;
-            _logger = logger;
-        }
+        public UploadController(IWebHostEnvironment environment, ILogger<UploadController> logger) =>
+            (_environment, _logger) = (environment, logger);
 
-        // Single file upload
         [HttpPost("upload/esi")]
         public IActionResult EtherCATSlaveInformation(IFormFile file)
         {

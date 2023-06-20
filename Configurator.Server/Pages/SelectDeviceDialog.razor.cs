@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using Configurator.Server.Shared;
 
 namespace Configurator.Server.Pages
 {
@@ -25,7 +26,7 @@ namespace Configurator.Server.Pages
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
-        Shared.EventConsole console;
+        EventConsole console;
 
         // Progress variables
         int progress = 0;
