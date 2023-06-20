@@ -47,7 +47,7 @@ namespace Configurator.Server.Controllers
                 if (numDevices <= 0)
                     throw new XmlContentException("File contains no EtherCAT devices.");
 
-                return Ok(new { Name = file.FileName, Size = file.Length, NumDevices = numDevices });
+                return Ok(new UploadEsiResponse { Name = file.Name, Size = file.Length, Devices = devices });
             }
             catch (XmlContentException ex)
             {
@@ -59,7 +59,7 @@ namespace Configurator.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"{ex.GetType().Name}: {ex.Message}");
+                return StatusCode(500, $"Internal {ex.GetType().Name}: {ex.Message}");
             }
         }
     }

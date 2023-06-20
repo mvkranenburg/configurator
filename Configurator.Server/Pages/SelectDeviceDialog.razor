@@ -27,6 +27,23 @@
             <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">
                 2. Select an EtherCAT device to continue
             </RadzenText>
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@devices"
+                TItem="Configurator.Models.Device" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Id" Title="ID" Frozen="true"
+                        Width="80px" />
+                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Type" Title="Type" Frozen="true"
+                        Width="80px" />
+                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Name" Title="Name"
+                        Width="160px" />
+                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="ProductCode" Title="Product code"
+                        FormatString="0x{0:X8}" Width="160px" />
+                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="RevisionNo"
+                        Title="Revision number" FormatString="0x{0:X8}" Width="200px" />
+                </Columns>
+            </RadzenDataGrid>
         </RadzenStepsItem>
     </Steps>
 </RadzenSteps>

@@ -1,8 +1,9 @@
-using System.Text.Json.Nodes;
+using System.Text.Json;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Configurator.Server.Shared;
+using Configurator.Models;
 
 namespace Configurator.Server.Pages
 {
@@ -27,6 +28,7 @@ namespace Configurator.Server.Pages
         protected NotificationService NotificationService { get; set; }
 
         EventConsole console;
+        IEnumerable<Device> devices = Enumerable.Empty<Device>();
 
         // Progress variables
         int progress = 0;
@@ -56,19 +58,38 @@ namespace Configurator.Server.Pages
         {
             console.Log($"OnComplete: Cancelled={args.Cancelled}, Json={args.RawResponse}");
 
-            if (!args.Cancelled)
-            {
-                var node = JsonNode.Parse(args.RawResponse);
-                var name = node["name"].GetValue<string>();
-                var size = node["size"].GetValue<uint>();
-                var numDevices = node["numDevices"].GetValue<uint>();
-
-                completeMessage = $"Loaded {name} ({size / 1024} KB) containing {numDevices} EtherCAT device{(numDevices == 1 ? "" : "s")}.";
-            }
-
             showProgress = false;
-            showComplete = !args.Cancelled;
-            showError = false;
+            if (args.Cancelled)
+            {
+                showComplete = false;
+                showError = false;
+            }
+            else
+            {
+                try
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var response = JsonSerializer.Deserialize<UploadEsiResponse>(args.RawResponse, options);
+
+                    devices = response.Devices;
+                    var numDevices = devices.Count();
+
+                    completeMessage = $"Loaded {response.Name} ({response.Size / 1024} KB) containing {numDevices} EtherCAT device{(numDevices == 1 ? "" : "s")}.";
+
+                    showComplete = true;
+                    showError = false;
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = $"Internal {ex.GetType().Name}: {ex.Message}";
+
+                    showComplete = false;
+                    showError = true;
+                }
+            }
         }
 
         void OnProgress(UploadProgressArgs args)
