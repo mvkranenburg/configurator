@@ -27,26 +27,25 @@ namespace Configurator.Server.Pages
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
-        EventConsole console;
         IEnumerable<Device> devices = Enumerable.Empty<Device>();
 
-        // Progress variables
+        // Select ESI variables
         int progress = 0;
         bool showProgress = false;
         bool cancelUpload = false;
 
-        // Progress variables
         bool showComplete = false;
         string completeMessage = string.Empty;
 
-        // Error variables
         bool showError = false;
         string errorMessage = string.Empty;
 
+        // Select device variables
+        string pagingSummaryFormat = "Page {0} of {1} ({2} devices)";
+        IList<Device> selectedDevices = new List<Device>();
+
         void OnError(UploadErrorEventArgs args)
         {
-            console.Log($"OnError: {args.Message}");
-
             errorMessage = args.Message;
 
             showProgress = false;
@@ -56,8 +55,6 @@ namespace Configurator.Server.Pages
 
         void OnComplete(UploadCompleteEventArgs args)
         {
-            console.Log($"OnComplete: Cancelled={args.Cancelled}, Json={args.RawResponse}");
-
             showProgress = false;
             if (args.Cancelled)
             {
@@ -94,8 +91,6 @@ namespace Configurator.Server.Pages
 
         void OnProgress(UploadProgressArgs args)
         {
-            console.Log($"OnProgress: Progress={args.Progress}, Cancel={cancelUpload}");
-
             args.Cancel = cancelUpload;
             cancelUpload = false;
 
@@ -108,8 +103,6 @@ namespace Configurator.Server.Pages
 
         void CancelUpload()
         {
-            console.Log("CancelUpload");
-
             cancelUpload = true;
         }
     }

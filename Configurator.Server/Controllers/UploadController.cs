@@ -38,11 +38,6 @@ namespace Configurator.Server.Controllers
                     RevisionNo = uint.Parse(((string)e.Element("Type").Attribute("RevisionNo"))[2..], NumberStyles.HexNumber)
                 });
 
-                foreach (var device in devices)
-                {
-                    _logger.LogDebug("{device}", device.ToString());
-                }
-
                 var numDevices = devices.Count();
                 if (numDevices <= 0)
                     throw new XmlContentException("File contains no EtherCAT devices.");

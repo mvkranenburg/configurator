@@ -34,7 +34,7 @@ namespace Configurator.Server.Pages
         {
             await DialogService.OpenAsync<SelectDeviceDialog>($"Select EtherCAT device",
                 new Dictionary<string, object>() { },
-                new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true });
+                new DialogOptions() { Width = "800px", Height = "600px", Resizable = true, Draggable = true });
         }
     }
 }

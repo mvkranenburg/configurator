@@ -2,10 +2,7 @@
 
 <RadzenSteps>
     <Steps>
-        <RadzenStepsItem Text="Select ESI file">
-            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">
-                1. Select an ESI file to continue
-            </RadzenText>
+        <RadzenStepsItem Text="Select an ESI file">
             <RadzenUpload Url="upload/esi" Accept="text/xml" Progress=@OnProgress Complete=@OnComplete Error=@OnError
                 class="w-100" />
             <RadzenStack Orientation="Radzen.Orientation.Horizontal" Gap="10px"
@@ -23,29 +20,28 @@
                 @errorMessage
             </RadzenAlert>
         </RadzenStepsItem>
-        <RadzenStepsItem Text="Select EtherCAT device" Disabled="@(!showComplete)">
-            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">
-                2. Select an EtherCAT device to continue
-            </RadzenText>
-            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true"
-                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@devices"
-                TItem="Configurator.Models.Device" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <RadzenStepsItem Text="Select an EtherCAT device" Disabled="@(!showComplete)">
+            <!-- LogicalFilterOperator="LogicalFilterOperator.Or" -->
+            <RadzenDataGrid Data="@devices" TItem="Device" PageSize="6" AllowPaging="true" ShowPagingSummary="true"
+                PagerHorizontalAlign="HorizontalAlign.Left" PagingSummaryFormat="@pagingSummaryFormat"
+                GridLines="Radzen.DataGridGridLines.None" AllowFiltering="true" FilterMode="FilterMode.Advanced"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowColumnResize="false"
+                SelectionMode="DataGridSelectionMode.Single" @bind-Value="@selectedDevices">
                 <Columns>
-                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Id" Title="ID" Frozen="true"
-                        Width="80px" />
-                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Type" Title="Type" Frozen="true"
-                        Width="80px" />
-                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="Name" Title="Name"
-                        Width="160px" />
-                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="ProductCode" Title="Product code"
-                        FormatString="0x{0:X8}" Width="160px" />
-                    <RadzenDataGridColumn TItem="Configurator.Models.Device" Property="RevisionNo"
-                        Title="Revision number" FormatString="0x{0:X8}" Width="200px" />
+                    <RadzenDataGridColumn TItem="Device" Property="Type" Title="Type" Width="150px" />
+                    <RadzenDataGridColumn TItem="Device" Property="ProductCode" Title="Product code"
+                        FormatString="0x{0:X8}" Width="100px" />
+                    <RadzenDataGridColumn TItem="Device" Property="RevisionNo" Title="Revision number"
+                        FormatString="0x{0:X8}" Width="100px" />
+                    <RadzenDataGridColumn TItem="Device" Property="Name" Title="Name" Width="auto" />
                 </Columns>
             </RadzenDataGrid>
         </RadzenStepsItem>
     </Steps>
 </RadzenSteps>
-
-<EventConsole @ref=@console />
+<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+    <RadzenButton Click="@((args) => DialogService.Close(false))" ButtonStyle="ButtonStyle.Secondary" Text="Cancel"
+        Style="width: 100px" />
+    <RadzenButton Click="@((args) => DialogService.Close(true))" Disabled=@(!selectedDevices.Any()) Text="Select"
+        Style="width: 100px" />
+</RadzenStack>
