@@ -22,6 +22,19 @@ namespace Configurator.Server.Controllers
         public UploadController(IWebHostEnvironment environment, ILogger<UploadController> logger) =>
             (_environment, _logger) = (environment, logger);
 
+        /// <summary>
+        /// Parse a string of XML Schema simple type HexDecValue to a long.
+        /// </summary>
+        /// <param name="value">String to parse.</param>
+        /// <returns>Long value of parsed string.</returns>
+        public static long ParseHexDecValue(string value)
+        {
+            if (value.StartsWith("#x"))
+                return long.Parse(value[2..], NumberStyles.HexNumber);
+            else
+                return long.Parse(value);
+        }
+
         [HttpPost("upload/esi")]
         public IActionResult EtherCATSlaveInformation(IFormFile file)
         {
@@ -34,8 +47,8 @@ namespace Configurator.Server.Controllers
                 {
                     Type = e.Element("Type").Value,
                     Name = e.Elements("Name").Where(n => (string)n.Attribute("LcId") == "1033").FirstOrDefault().Value,
-                    ProductCode = uint.Parse(((string)e.Element("Type").Attribute("ProductCode"))[2..], NumberStyles.HexNumber),
-                    RevisionNo = uint.Parse(((string)e.Element("Type").Attribute("RevisionNo"))[2..], NumberStyles.HexNumber)
+                    ProductCode = (uint)ParseHexDecValue((string)e.Element("Type").Attribute("ProductCode")),
+                    RevisionNo = (uint)ParseHexDecValue((string)e.Element("Type").Attribute("RevisionNo"))
                 });
 
                 var numDevices = devices.Count();
