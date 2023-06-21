@@ -1,9 +1,8 @@
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using System.Xml.Serialization;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Configurator.Models;
+using EtherCATInfoXmlSchema;
 
 namespace Configurator.Server.Controllers
 {
@@ -42,13 +41,14 @@ namespace Configurator.Server.Controllers
             {
                 // TODO: Validate IFormFile input against XSD
 
-                var esi = XDocument.Load(file.OpenReadStream());
-                var devices = esi.XPathSelectElements("//Descriptions/Devices/Device").Select(e => new Device
+                var serializer = new XmlSerializer(typeof(EtherCATInfo));
+                var esi = (EtherCATInfo)serializer.Deserialize(file.OpenReadStream());
+                var devices = esi.Descriptions.Devices.Select(d => new Device
                 {
-                    Type = e.Element("Type").Value,
-                    Name = e.Elements("Name").Where(n => (string)n.Attribute("LcId") == "1033").FirstOrDefault().Value,
-                    ProductCode = (uint)ParseHexDecValue((string)e.Element("Type").Attribute("ProductCode")),
-                    RevisionNo = (uint)ParseHexDecValue((string)e.Element("Type").Attribute("RevisionNo"))
+                    Type = d.Type.Value,
+                    Name = d.Name.Where(n => n.LcId == "1033").FirstOrDefault().Value,
+                    ProductCode = (uint)ParseHexDecValue(d.Type.ProductCode),
+                    RevisionNo = (uint)ParseHexDecValue(d.Type.RevisionNo),
                 });
 
                 var numDevices = devices.Count();
@@ -61,7 +61,7 @@ namespace Configurator.Server.Controllers
             {
                 return BadRequest($"XML content error: {ex.Message}");
             }
-            catch (XmlException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest($"XML syntax error: {ex.Message}");
             }
