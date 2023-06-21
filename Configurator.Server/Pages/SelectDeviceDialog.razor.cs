@@ -2,8 +2,8 @@ using System.Text.Json;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Radzen;
-using Configurator.Server.Shared;
 using Configurator.Models;
+using Configurator.Server.Services;
 
 namespace Configurator.Server.Pages
 {
@@ -26,6 +26,9 @@ namespace Configurator.Server.Pages
 
         [Inject]
         protected NotificationService NotificationService { get; set; }
+
+        [Inject]
+        protected AppDataService AppDataService { get; set; }
 
         IEnumerable<Device> devices = Enumerable.Empty<Device>();
 
@@ -104,6 +107,12 @@ namespace Configurator.Server.Pages
         void CancelUpload()
         {
             cancelUpload = true;
+        }
+
+        async Task OnSelectClick()
+        {
+            AppDataService.Device = selectedDevices.First();
+            DialogService.Close(true);
         }
     }
 }

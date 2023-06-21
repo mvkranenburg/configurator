@@ -42,6 +42,6 @@
 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
     <RadzenButton Click="@((args) => DialogService.Close(false))" ButtonStyle="ButtonStyle.Secondary" Text="Cancel"
         Style="width: 100px" />
-    <RadzenButton Click="@((args) => DialogService.Close(true))" Disabled=@(!selectedDevices.Any()) Text="Select"
+    <RadzenButton Click=@OnSelectClick Disabled=@(!selectedDevices.Any()) Text="Select"
         Style="width: 100px" />
 </RadzenStack>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using Configurator.Server.Services;
 
 namespace Configurator.Server.Pages
 {
@@ -29,6 +30,9 @@ namespace Configurator.Server.Pages
 
         [Inject]
         protected NotificationService NotificationService { get; set; }
+
+        [Inject]
+        protected AppDataService AppDataService { get; set; }
 
         protected async Task OpenSelectDeviceDialog(MouseEventArgs args)
         {
