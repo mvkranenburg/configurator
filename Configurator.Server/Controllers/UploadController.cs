@@ -62,13 +62,35 @@ namespace Configurator.Server.Controllers
                     Name = ParseNameType(d.Name),
                     ProductCode = (uint)ParseHexDecValue(d.Type.ProductCode),
                     RevisionNo = (uint)ParseHexDecValue(d.Type.RevisionNo),
-                    Objects = d.Profile.FirstOrDefault()?.Dictionary.Objects.Select(o => new EtherCATObject
+                    Objects = new[]
                     {
-                        Index = (ushort)ParseHexDecValue(o.Index.Value),
-                        Type = o.Type,
-                        Name = ParseNameType(o.Name),
-                        Comment = ParseNameType(o.Comment),
-                    }),
+                        // Add Dictionary objects
+                        d.Profile.FirstOrDefault()?.Dictionary.Objects.Select(o => new EtherCATObject
+                        {
+                            Index = (ushort)ParseHexDecValue(o.Index.Value),
+                            Type = o.Type,
+                            Name = ParseNameType(o.Name),
+                            Comment = ParseNameType(o.Comment),
+                        }) ?? Enumerable.Empty<EtherCATObject>(),
+
+                        // Add RxPDO objects
+                        d.RxPdo.SelectMany(r => r.Entry.Where(e => e.DataType != null).Select(e => new EtherCATObject
+                        {
+                            Index = (ushort)ParseHexDecValue(e.Index.Value),
+                            Type = e.DataType.Value,
+                            Name = ParseNameType(e.Name),
+                            Comment = e.Comment,
+                        })),
+
+                        // Add TxPDO objects
+                        d.TxPdo.SelectMany(r => r.Entry.Where(e => e.DataType != null).Select(e => new EtherCATObject
+                        {
+                            Index = (ushort)ParseHexDecValue(e.Index.Value),
+                            Type = e.DataType.Value,
+                            Name = ParseNameType(e.Name),
+                            Comment = e.Comment,
+                        }))
+                    }.SelectMany(o => o),
                 });
 
                 var numDevices = devices.Count();
