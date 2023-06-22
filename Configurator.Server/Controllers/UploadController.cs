@@ -62,7 +62,7 @@ namespace Configurator.Server.Controllers
                     Name = ParseNameType(d.Name),
                     ProductCode = (uint)ParseHexDecValue(d.Type.ProductCode),
                     RevisionNo = (uint)ParseHexDecValue(d.Type.RevisionNo),
-                    Objects = d.Profile.FirstOrDefault().Dictionary.Objects.Select(o => new EtherCATObject
+                    Objects = d.Profile.FirstOrDefault()?.Dictionary.Objects.Select(o => new EtherCATObject
                     {
                         Index = (ushort)ParseHexDecValue(o.Index.Value),
                         Type = o.Type,
