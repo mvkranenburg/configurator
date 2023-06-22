@@ -4,5 +4,5 @@ using Configurator.Models;
 
 public class AppDataService
 {
-    public Device Device { get; set; }
+    public EtherCATDevice Device { get; set; }
 }

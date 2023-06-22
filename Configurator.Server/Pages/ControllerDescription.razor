@@ -9,5 +9,5 @@
 <RadzenButton Text="Select EtherCAT device" Click="@OpenSelectDeviceDialog"></RadzenButton>
 @if (@AppDataService.Device != null)
 {
-    <RadzenText class="mt-4">@($"Device {AppDataService.Device.Name} selected.")</RadzenText>
+    <RadzenText class="mt-4">@($"Device {AppDataService.Device.Name} selected. The device has {AppDataService.Device.Objects.Count()} dictionary objects.")</RadzenText>
 }

@@ -22,18 +22,18 @@
         </RadzenStepsItem>
         <RadzenStepsItem Text="Select an EtherCAT device" Disabled="@(!showComplete)">
             <!-- LogicalFilterOperator="LogicalFilterOperator.Or" -->
-            <RadzenDataGrid Data="@devices" TItem="Device" PageSize="6" AllowPaging="true" ShowPagingSummary="true"
+            <RadzenDataGrid Data="@devices" TItem="EtherCATDevice" PageSize="6" AllowPaging="true" ShowPagingSummary="true"
                 PagerHorizontalAlign="HorizontalAlign.Left" PagingSummaryFormat="@pagingSummaryFormat"
                 GridLines="Radzen.DataGridGridLines.None" AllowFiltering="true" FilterMode="FilterMode.Advanced"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowColumnResize="false"
                 SelectionMode="DataGridSelectionMode.Single" @bind-Value="@selectedDevices">
                 <Columns>
-                    <RadzenDataGridColumn TItem="Device" Property="Type" Title="Type" Width="150px" />
-                    <RadzenDataGridColumn TItem="Device" Property="ProductCode" Title="Product code"
+                    <RadzenDataGridColumn TItem="EtherCATDevice" Property="Type" Title="Type" Width="150px" />
+                    <RadzenDataGridColumn TItem="EtherCATDevice" Property="ProductCode" Title="Product code"
                         FormatString="0x{0:X8}" Width="100px" />
-                    <RadzenDataGridColumn TItem="Device" Property="RevisionNo" Title="Revision number"
+                    <RadzenDataGridColumn TItem="EtherCATDevice" Property="RevisionNo" Title="Revision number"
                         FormatString="0x{0:X8}" Width="100px" />
-                    <RadzenDataGridColumn TItem="Device" Property="Name" Title="Name" Width="auto" />
+                    <RadzenDataGridColumn TItem="EtherCATDevice" Property="Name" Title="Name" Width="auto" />
                 </Columns>
             </RadzenDataGrid>
         </RadzenStepsItem>

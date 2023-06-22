@@ -30,7 +30,7 @@ namespace Configurator.Server.Pages
         [Inject]
         protected AppDataService AppDataService { get; set; }
 
-        IEnumerable<Device> devices = Enumerable.Empty<Device>();
+        IEnumerable<EtherCATDevice> devices = Enumerable.Empty<EtherCATDevice>();
 
         // Select ESI variables
         int progress = 0;
@@ -45,7 +45,7 @@ namespace Configurator.Server.Pages
 
         // Select device variables
         string pagingSummaryFormat = "Page {0} of {1} ({2} devices)";
-        IList<Device> selectedDevices = new List<Device>();
+        IList<EtherCATDevice> selectedDevices = new List<EtherCATDevice>();
 
         void OnError(UploadErrorEventArgs args)
         {

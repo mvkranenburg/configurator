@@ -1,8 +1,7 @@
-using System.Xml.Serialization;
 using System.Globalization;
+using System.Xml.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Configurator.Models;
-using EtherCATInfoXmlSchema;
 
 namespace Configurator.Server.Controllers
 {
@@ -22,16 +21,27 @@ namespace Configurator.Server.Controllers
             (_environment, _logger) = (environment, logger);
 
         /// <summary>
-        /// Parse a string of XML Schema simple type HexDecValue to a long.
+        /// Parse xs:simpleType HexDecValue to long.
         /// </summary>
-        /// <param name="value">String to parse.</param>
-        /// <returns>Long value of parsed string.</returns>
-        public static long ParseHexDecValue(string value)
+        /// <param name="hexDecValue">HexDecValue to parse.</param>
+        /// <returns>Parsed value.</returns>
+        private static long ParseHexDecValue(string hexDecValue)
         {
-            if (value.StartsWith("#x"))
-                return long.Parse(value[2..], NumberStyles.HexNumber);
+            if (hexDecValue.StartsWith("#x"))
+                return long.Parse(hexDecValue[2..], NumberStyles.HexNumber);
             else
-                return long.Parse(value);
+                return long.Parse(hexDecValue);
+        }
+
+        /// <summary>
+        /// Parse xs:complexType NameType to string.
+        /// </summary>
+        /// <param name="nameTypes">Collection of NameType to parse.</param>
+        /// <param name="lcid">Language ID to parse, default is 1033 (English)</param>
+        /// <returns>Parsed value.</returns>
+        private static string ParseNameType(IEnumerable<EtherCATInfoXmlSchema.NameType> nameTypes, string lcId = "1033")
+        {
+            return nameTypes.Where(n => n.LcId == lcId).FirstOrDefault()?.Value;
         }
 
         [HttpPost("upload/esi")]
@@ -41,14 +51,24 @@ namespace Configurator.Server.Controllers
             {
                 // TODO: Validate IFormFile input against XSD
 
-                var serializer = new XmlSerializer(typeof(EtherCATInfo));
-                var esi = (EtherCATInfo)serializer.Deserialize(file.OpenReadStream());
-                var devices = esi.Descriptions.Devices.Select(d => new Device
+                // Deserialize XML
+                var serializer = new XmlSerializer(typeof(EtherCATInfoXmlSchema.EtherCATInfo));
+                var esi = (EtherCATInfoXmlSchema.EtherCATInfo)serializer.Deserialize(file.OpenReadStream());
+
+                // Parse devices
+                var devices = esi.Descriptions.Devices.Select(d => new EtherCATDevice
                 {
                     Type = d.Type.Value,
-                    Name = d.Name.Where(n => n.LcId == "1033").FirstOrDefault().Value,
+                    Name = ParseNameType(d.Name),
                     ProductCode = (uint)ParseHexDecValue(d.Type.ProductCode),
                     RevisionNo = (uint)ParseHexDecValue(d.Type.RevisionNo),
+                    Objects = d.Profile.FirstOrDefault().Dictionary.Objects.Select(o => new EtherCATObject
+                    {
+                        Index = (ushort)ParseHexDecValue(o.Index.Value),
+                        Type = o.Type,
+                        Name = ParseNameType(o.Name),
+                        Comment = ParseNameType(o.Comment),
+                    }),
                 });
 
                 var numDevices = devices.Count();
