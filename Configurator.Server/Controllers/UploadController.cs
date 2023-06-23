@@ -17,6 +17,11 @@ namespace Configurator.Server.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of UploadController.
+        /// </summary>
+        /// <param name="environment">Web-host environment.</param>
+        /// <param name="logger">Logger instance.</param>
         public UploadController(IWebHostEnvironment environment, ILogger<UploadController> logger) =>
             (_environment, _logger) = (environment, logger);
 
@@ -44,6 +49,43 @@ namespace Configurator.Server.Controllers
             return nameTypes.Where(n => n.LcId == lcId).FirstOrDefault()?.Value;
         }
 
+        /// <summary>
+        /// Parse xs:complexType ObjectTypeFlagsAccess to EtherCATObjectAccess.
+        /// </summary>
+        /// <param name="access">ObjectTypeFlagsAccess to parse.</param>
+        /// <returns>Parsed value.</returns>
+        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXmlSchema.ObjectTypeFlagsAccess access)
+        {
+            return access.Value switch
+            {
+                "ro" => EtherCATObjectAccess.ReadOnly,
+                "rw" => EtherCATObjectAccess.ReadWrite,
+                "wo" => EtherCATObjectAccess.WriteOnly,
+                _ => throw new ArgumentException("Invalid sting value for access", nameof(access)),
+            };
+        }
+
+        /// <summary>
+        /// Parse xs:simpleType ObjectTypeFlagsPdoMapping to EtherCATObjectPdoMapping.
+        /// </summary>
+        /// <param name="access">ObjectTypeFlagsPdoMapping to parse.</param>
+        /// <returns>Parsed value.</returns>
+        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping pdoMapping)
+        {
+            return pdoMapping switch
+            {
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.R or
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.T or
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.RT or
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.TR or
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.Rt or
+                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
+                _ => throw new ArgumentException("Invalid enum value for pdoMapping", nameof(pdoMapping)),
+            };
+        }
+
         [HttpPost("upload/esi")]
         public IActionResult EtherCATSlaveInformation(IFormFile file)
         {
@@ -69,8 +111,12 @@ namespace Configurator.Server.Controllers
                         {
                             Index = (ushort)ParseHexDecValue(o.Index.Value),
                             Type = o.Type,
+                            BitSize = o.BitSize,
+                            Access = ParseAccess(o.Flags.Access),
+                            PdoMapping = ParsePdoMapping(o.Flags.PdoMapping),
                             Name = ParseNameType(o.Name),
                             Comment = ParseNameType(o.Comment),
+                            Source = EtherCATObjectSource.Dictionary,
                         }) ?? Enumerable.Empty<EtherCATObject>(),
 
                         // Add RxPDO objects
@@ -78,8 +124,12 @@ namespace Configurator.Server.Controllers
                         {
                             Index = (ushort)ParseHexDecValue(e.Index.Value),
                             Type = e.DataType.Value,
+                            BitSize = e.BitLen,
+                            Access = EtherCATObjectAccess.WriteOnly,
+                            PdoMapping = EtherCATObjectPdoMapping.RxPDO,
                             Name = ParseNameType(e.Name),
                             Comment = e.Comment,
+                            Source = EtherCATObjectSource.RxPDO,
                         })),
 
                         // Add TxPDO objects
@@ -87,8 +137,12 @@ namespace Configurator.Server.Controllers
                         {
                             Index = (ushort)ParseHexDecValue(e.Index.Value),
                             Type = e.DataType.Value,
+                            BitSize = e.BitLen,
+                            Access = EtherCATObjectAccess.ReadOnly,
+                            PdoMapping = EtherCATObjectPdoMapping.TxPDO,
                             Name = ParseNameType(e.Name),
                             Comment = e.Comment,
+                            Source = EtherCATObjectSource.TXPDO,
                         }))
                     }.SelectMany(o => o),
                 });
