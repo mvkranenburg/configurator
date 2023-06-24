@@ -1,4 +1,4 @@
-﻿namespace Configurator.Models;
+namespace Configurator.Models;
 
 public class EtherCATDevice
 {

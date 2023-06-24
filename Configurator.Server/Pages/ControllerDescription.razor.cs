@@ -34,11 +34,21 @@ namespace Configurator.Server.Pages
         [Inject]
         protected AppDataService AppDataService { get; set; }
 
-        protected async Task OpenSelectDeviceDialog(MouseEventArgs args)
+        protected async Task SelectDeviceClick(MouseEventArgs args)
         {
             await DialogService.OpenAsync<SelectDeviceDialog>($"Select EtherCAT device",
                 new Dictionary<string, object>() { },
                 new DialogOptions() { Width = "800px", Height = "600px", Resizable = true, Draggable = true });
         }
+
+        protected void SelectDeviceMouseEnter(ElementReference args, TooltipOptions options = null) => TooltipService.Open(args, "Select EtherCAT device", options);
+        protected void SelectDeviceMouseLeave(ElementReference args) => TooltipService.Close();
+
+        protected async Task SaveControllerClick(MouseEventArgs args)
+        {
+        }
+
+        protected void SaveControllerMouseEnter(ElementReference args, TooltipOptions options = null) => TooltipService.Open(args, "Save controller description", options);
+        protected void SaveControllerMouseLeave(ElementReference args) => TooltipService.Close();
     }
 }
