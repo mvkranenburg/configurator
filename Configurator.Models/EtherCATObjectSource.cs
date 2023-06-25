@@ -16,6 +16,11 @@ public class EtherCATObjectSource : IComparable<EtherCATObjectSource>, IEquatabl
         return compare != 0 ? compare : Index.CompareTo(other.Index);
     }
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Type, Index, Name);
+    }
+
     public bool Equals(EtherCATObjectSource? other)
     {
         if (other == null) return false;
