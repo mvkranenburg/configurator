@@ -9,5 +9,5 @@ public class EtherCATObject
     public EtherCATObjectPdoMapping PdoMapping { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
-    public EtherCATObjectSource Source { get; set; }
+    public EtherCATObjectSource? Source { get; set; }
 }

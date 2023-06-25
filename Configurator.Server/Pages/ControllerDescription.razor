@@ -25,7 +25,7 @@
 <RadzenSplitter Visible="true">
     <RadzenSplitterPane Size="50%" Min="30%" Max="70%">
         <RadzenDataGrid Data=@(AppDataService.Device.Objects) TItem="EtherCATObject"
-            GridLines="Radzen.DataGridGridLines.None" AllowGrouping="true" HideGroupedColumn="true"
+            GridLines="Radzen.DataGridGridLines.None" AllowGrouping="false" HideGroupedColumn="true"
             Render=@EtherCATObjectDataGridRender class="h-100">
             <Columns>
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Index" Title="Index" FormatString="0x{0:X4}"

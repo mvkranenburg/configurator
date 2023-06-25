@@ -86,6 +86,13 @@ namespace Configurator.Server.Controllers
             };
         }
 
+        /// <summary>
+        /// Upload handler for EtherCAT Slave Information (ESI) file on the path <c>upload/esi</c>. The 
+        /// ESI file is converted to an <c>IEnumerable&lt;EtherCATDevice&gt;</c> collection of devices
+        /// and returned to the caller on success.
+        /// </summary>
+        /// <param name="file">File sent with the HTTP request.</param>
+        /// <returns>HTTP response with status code and in case of status code 200 a JSON serialized <c>UploadEsiResponse</c>.</returns>
         [HttpPost("upload/esi")]
         public IActionResult EtherCATSlaveInformation(IFormFile file)
         {
@@ -116,7 +123,10 @@ namespace Configurator.Server.Controllers
                             PdoMapping = ParsePdoMapping(o.Flags.PdoMapping),
                             Name = ParseNameType(o.Name),
                             Comment = ParseNameType(o.Comment),
-                            Source = EtherCATObjectSource.Dictionary,
+                            Source = new EtherCATObjectSource
+                            {
+                                Type = EtherCATObjectSourceType.Dictionary
+                            },
                         }) ?? Enumerable.Empty<EtherCATObject>(),
 
                         // Add RxPDO objects
@@ -129,7 +139,12 @@ namespace Configurator.Server.Controllers
                             PdoMapping = EtherCATObjectPdoMapping.RxPDO,
                             Name = ParseNameType(e.Name),
                             Comment = e.Comment,
-                            Source = EtherCATObjectSource.RxPDO,
+                            Source = new EtherCATObjectSource
+                            {
+                                Type = EtherCATObjectSourceType.RxPDO,
+                                Index = (ushort)ParseHexDecValue(r.Index.Value),
+                                Name = ParseNameType(r.Name),
+                            },
                         })),
 
                         // Add TxPDO objects
@@ -142,7 +157,12 @@ namespace Configurator.Server.Controllers
                             PdoMapping = EtherCATObjectPdoMapping.TxPDO,
                             Name = ParseNameType(e.Name),
                             Comment = e.Comment,
-                            Source = EtherCATObjectSource.TXPDO,
+                            Source = new EtherCATObjectSource
+                            {
+                                Type = EtherCATObjectSourceType.TxPDO,
+                                Index = (ushort)ParseHexDecValue(r.Index.Value),
+                                Name = ParseNameType(r.Name),
+                            },
                         }))
                     }.SelectMany(o => o),
                 });
@@ -151,7 +171,12 @@ namespace Configurator.Server.Controllers
                 if (numDevices <= 0)
                     throw new XmlContentException("File contains no EtherCAT devices.");
 
-                return Ok(new UploadEsiResponse { Name = file.Name, Size = file.Length, Devices = devices });
+                return Ok(new UploadEsiResponse
+                {
+                    Name = file.Name,
+                    Size = file.Length,
+                    Devices = devices
+                });
             }
             catch (XmlContentException ex)
             {
