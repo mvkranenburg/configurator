@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
 using Configurator.Server.Services;
+using Configurator.Models;
 
 namespace Configurator.Server.Pages
 {
@@ -33,6 +34,15 @@ namespace Configurator.Server.Pages
 
         [Inject]
         protected AppDataService AppDataService { get; set; }
+
+        protected void EtherCATObjectDataGridRender(DataGridRenderEventArgs<EtherCATObject> args)
+        {
+            if (args.FirstRender)
+            {
+                args.Grid.Groups.Add(new GroupDescriptor() { Property = "Source", SortOrder = SortOrder.Descending });
+                StateHasChanged();
+            }
+        }
 
         protected async Task SelectDeviceClick(MouseEventArgs args)
         {

@@ -5,16 +5,16 @@
 <RadzenText Text="Controller description" TextStyle="TextStyle.H3" TagName="TagName.H1" />
 
 <RadzenRow>
-    <RadzenColumn>
+    <RadzenColumn Size="2">
         <RadzenButton Click="@SelectDeviceClick" Icon="description" class="rz-m-1" Size="Radzen.ButtonSize.Small"
             Variant="Radzen.Variant.Text"
             MouseEnter="@(args => SelectDeviceMouseEnter(args, new TooltipOptions(){ Position = TooltipPosition.Right }))"
             MouseLeave="@SelectDeviceMouseLeave" />
     </RadzenColumn>
-    <RadzenColumn>
+    <RadzenColumn Size="8">
         <RadzenText Text="@AppDataService.Device.Name" TextAlign="Radzen.TextAlign.Center" class="rz-mt-2" />
     </RadzenColumn>
-    <RadzenColumn>
+    <RadzenColumn Size="2">
         <RadzenButton Click="@SaveControllerClick" Icon="save" class="rz-m-1" Size="Radzen.ButtonSize.Small"
             Variant="Radzen.Variant.Text" Style="float: right"
             MouseEnter="@(args => SaveControllerMouseEnter(args, new TooltipOptions(){ Position = TooltipPosition.Left }))"
@@ -25,7 +25,8 @@
 <RadzenSplitter Visible="true">
     <RadzenSplitterPane Size="50%" Min="30%" Max="70%">
         <RadzenDataGrid Data=@(AppDataService.Device.Objects) TItem="EtherCATObject"
-            GridLines="Radzen.DataGridGridLines.None" class="h-100">
+            GridLines="Radzen.DataGridGridLines.None" AllowGrouping="true" HideGroupedColumn="true"
+            Render=@EtherCATObjectDataGridRender class="h-100">
             <Columns>
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Index" Title="Index" FormatString="0x{0:X4}"
                     Width="75px" />
@@ -34,6 +35,7 @@
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Access" Title="Access" Width="100px" />
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="PdoMapping" Title="PDO mapping" Width="100px" />
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Comment" Title="Comment" />
+                <RadzenDataGridColumn TItem="EtherCATObject" Property="Source" Title="Source" />
             </Columns>
         </RadzenDataGrid>
     </RadzenSplitterPane>
