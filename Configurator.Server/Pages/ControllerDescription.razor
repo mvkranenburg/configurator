@@ -25,8 +25,9 @@
 <RadzenSplitter Visible="true">
     <RadzenSplitterPane Size="50%" Min="30%" Max="70%">
         <RadzenDataGrid Data=@(AppDataService.Device.Objects) TItem="EtherCATObject"
-            GridLines="Radzen.DataGridGridLines.None" AllowGrouping="false" HideGroupedColumn="true"
-            Render=@EtherCATObjectDataGridRender class="h-100">
+            GridLines="Radzen.DataGridGridLines.None" AllowFiltering="true" FilterMode="FilterMode.Advanced"
+            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowColumnResize="false"
+            AllowGrouping="false" HideGroupedColumn="true" Render=@EtherCATObjectDataGridRender class="h-100">
             <Columns>
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Index" Title="Index" FormatString="0x{0:X4}"
                     Width="75px" />
@@ -41,7 +42,8 @@
     </RadzenSplitterPane>
     <RadzenSplitterPane>
         <RadzenDataGrid Data=@(AppDataService.Controller.Objects) TItem="CtrlDescObject"
-            GridLines="Radzen.DataGridGridLines.None" class="h-100">
+            GridLines="Radzen.DataGridGridLines.None" AllowFiltering="true" FilterMode="FilterMode.Advanced"
+            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowColumnResize="false" class="h-100">
             <Columns>
                 <RadzenDataGridColumn TItem="CtrlDescObject" Property="Name" Title="Name" />
                 <RadzenDataGridColumn TItem="CtrlDescObject" Property="Type" Title="Type" />

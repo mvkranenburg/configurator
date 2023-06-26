@@ -39,7 +39,7 @@ namespace Configurator.Server.Pages
         {
             if (args.FirstRender)
             {
-                args.Grid.Groups.Add(new GroupDescriptor() { Property = "Source", SortOrder = SortOrder.Descending });
+                args.Grid.Groups.Add(new GroupDescriptor() { Property = "Source", SortOrder = SortOrder.Ascending });
                 StateHasChanged();
             }
         }
