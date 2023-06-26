@@ -7,56 +7,16 @@ public class EtherCATObjectSource : IComparable<EtherCATObjectSource>, IEquatabl
     public string Name { get; set; } = string.Empty;
 
     public int CompareTo(EtherCATObjectSource? other)
-    {
-        // If other is not a valid object reference, this instance is greater.
-        if (other == null) return 1;
-
-        // Compare on Type first, then on Index if Type is equal
-        int compare = Type.CompareTo(other.Type);
-        return compare != 0 ? compare : Index.CompareTo(other.Index);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Type, Index, Name);
-    }
+        => other == null ? 1 : (Type, Index, Name).CompareTo((other.Type, other.Index, other.Name));
 
     public bool Equals(EtherCATObjectSource? other)
-    {
-        if (other == null) return false;
-        if (Type != other.Type) return false;
-        if (Index != other.Index) return false;
-        if (!Name.Equals(other.Name)) return false;
-        return true;
-    }
+        => other != null && Type == other.Type && Index == other.Index && Name == other.Name;
 
-    public override bool Equals(Object other)
-    {
-        if (other == null)
-            return false;
+    public override bool Equals(object? obj)
+        => obj is EtherCATObjectSource sourceObj && Equals(sourceObj);
 
-        EtherCATObjectSource sourceObj = other as EtherCATObjectSource;
-        if (sourceObj == null)
-            return false;
-        else
-            return Equals(sourceObj);
-    }
-
-    public static bool operator ==(EtherCATObjectSource lhs, EtherCATObjectSource rhs)
-    {
-        if (((object)lhs) == null || ((object)rhs) == null)
-            return Object.Equals(lhs, rhs);
-
-        return lhs.Equals(rhs);
-    }
-
-    public static bool operator !=(EtherCATObjectSource lhs, EtherCATObjectSource rhs)
-    {
-        if (((object)lhs) == null || ((object)rhs) == null)
-            return !Object.Equals(lhs, rhs);
-
-        return !lhs.Equals(rhs);
-    }
+    public override int GetHashCode()
+        => HashCode.Combine(Type, Index, Name);
 
     public override string ToString()
     {
