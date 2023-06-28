@@ -133,6 +133,7 @@ namespace Configurator.Server.Controllers
                         d.RxPdo.SelectMany(r => r.Entry.Where(e => e.DataType != null).Select(e => new EtherCATObject
                         {
                             Index = (ushort)ParseHexDecValue(e.Index.Value),
+                            SubIndex = (byte)ParseHexDecValue(e.SubIndex),
                             Type = e.DataType.Value,
                             BitSize = e.BitLen,
                             Access = EtherCATObjectAccess.WriteOnly,
@@ -151,6 +152,7 @@ namespace Configurator.Server.Controllers
                         d.TxPdo.SelectMany(r => r.Entry.Where(e => e.DataType != null).Select(e => new EtherCATObject
                         {
                             Index = (ushort)ParseHexDecValue(e.Index.Value),
+                            SubIndex = (byte)ParseHexDecValue(e.SubIndex),
                             Type = e.DataType.Value,
                             BitSize = e.BitLen,
                             Access = EtherCATObjectAccess.ReadOnly,

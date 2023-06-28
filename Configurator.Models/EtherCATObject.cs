@@ -2,7 +2,8 @@ namespace Configurator.Models;
 
 public class EtherCATObject
 {
-    public ushort Index { get; set; }
+    public ushort? Index { get; set; }
+    public byte? SubIndex { get; set; }
     public string Type { get; set; } = string.Empty;
     public int BitSize { get; set; }
     public EtherCATObjectAccess Access { get; set; }

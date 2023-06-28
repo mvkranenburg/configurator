@@ -30,7 +30,12 @@
             AllowGrouping="false" HideGroupedColumn="true" Render=@EtherCATObjectDataGridRender class="h-100">
             <Columns>
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Index" Title="Index" FormatString="0x{0:X4}"
-                    Width="75px" />
+                    Width="75px">
+                    <Template Context="obj">
+                        @(string.Join(".", new[] { obj.Index?.ToString("X4"), obj.SubIndex?.ToString() }.Where(s =>
+                            !string.IsNullOrEmpty(s))))
+                    </Template>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Name" Title="Name" />
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Type" Title="Data type" Width="100px" />
                 <RadzenDataGridColumn TItem="EtherCATObject" Property="Access" Title="Access" Width="100px" />
