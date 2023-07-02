@@ -44,7 +44,7 @@ namespace Configurator.Server.Controllers
         /// <param name="nameTypes">Collection of NameType to parse.</param>
         /// <param name="lcid">Language ID to parse, default is 1033 (English)</param>
         /// <returns>Parsed value.</returns>
-        private static string ParseNameType(IEnumerable<EtherCATInfoXmlSchema.NameType> nameTypes, string lcId = "1033")
+        private static string ParseNameType(IEnumerable<EtherCATInfoXmlSchema.NameType> nameTypes, int lcId = 1033)
         {
             return nameTypes.Where(n => n.LcId == lcId).FirstOrDefault()?.Value;
         }
