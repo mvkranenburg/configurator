@@ -50,11 +50,11 @@ namespace Configurator.Server.Controllers
         }
 
         /// <summary>
-        /// Parse xs:complexType ObjectTypeFlagsAccess to EtherCATObjectAccess.
+        /// Parse xs:complexType AccessType to EtherCATObjectAccess.
         /// </summary>
-        /// <param name="access">ObjectTypeFlagsAccess to parse.</param>
+        /// <param name="access">AccessType to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXmlSchema.ObjectTypeFlagsAccess access)
+        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXmlSchema.AccessType access)
         {
             return access.Value switch
             {
@@ -87,6 +87,102 @@ namespace Configurator.Server.Controllers
         }
 
         /// <summary>
+        /// Parse xs:simpleType SubItemTypeFlagsPdoMapping to EtherCATObjectPdoMapping.
+        /// </summary>
+        /// <param name="access">SubItemTypeFlagsPdoMapping to parse.</param>
+        /// <returns>Parsed value.</returns>
+        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping pdoMapping)
+        {
+            return pdoMapping switch
+            {
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.R or
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.T or
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.RT or
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.TR or
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.Rt or
+                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
+                _ => throw new ArgumentException("Invalid enum value for pdoMapping", nameof(pdoMapping)),
+            };
+        }
+
+        /// <summary>
+        /// Deserialize and pre-process EtherCAT Slave Information (ESI) file. The deserialized ESI is pre-processed before return
+        /// for easier parsing. The pre-processing steps are:
+        /// - Expand SubItems referring to an ArrayInfo DataType
+        ///
+        /// Constraints:
+        /// - Only Devices with a single Profile are supported, exception is thrown otherwise
+        /// - Only DataTypes with a single ArrayInfo are supported, exception is thrown otherwise
+        /// </summary>
+        /// <param name="stream">Stream containing the ESI file.</param>
+        /// <returns><c>EtherCATInfoXmlSchema.EtherCATInfo</c> representing the ESI file.</returns>
+        /// <exception cref="System.InvalidOperationException">Thrown when XML parsing fails.</exception>
+        private static EtherCATInfoXmlSchema.EtherCATInfo DeserializeEtherCATInfo(System.IO.Stream stream)
+        {
+            // TODO: Validate input against XSD
+
+            // Deserialize XML
+            var serializer = new XmlSerializer(typeof(EtherCATInfoXmlSchema.EtherCATInfo));
+            var esi = (EtherCATInfoXmlSchema.EtherCATInfo)serializer.Deserialize(stream);
+
+            // Expand SubItems referring to an ArrayInfo DataType
+            for (var i = 0; i < esi.Descriptions.Devices.Count; i++)
+            {
+                var dataTypes = esi.Descriptions.Devices[i].Profile.Single().Dictionary.DataTypes;
+                var arrayInfos = dataTypes.Where(d => d.ArrayInfo.Count() > 0)
+                    .Select(d => (d.Name, d.BaseType, d.BitSize, d.ArrayInfo.Single().LBound, d.ArrayInfo.Single().Elements))
+                    .ToDictionary(d => d.Name);
+
+                for (var j = 0; j < dataTypes.Count; j++)
+                {
+                    var subItems = dataTypes[j].SubItem;
+
+                    // CoE data type ARRAY conditions (ETG.2000 v1.0.14 table 10):
+                    // - must contain exactly two SubItems
+                    // - 1st element must have SubIdx 0
+                    // - 1st element must have Type USINT
+                    // - 2nd element must have no SubIdx
+                    // - 2nd element must have ArrayInfo datatype
+                    if
+                    (
+                        subItems.Count == 2 &&
+                        ParseHexDecValue(subItems[0].SubIdx) == 0 &&
+                        subItems[0].Type == "USINT" &&
+                        subItems[1].SubIdx == null &&
+                        arrayInfos.ContainsKey(subItems[1].Type)
+                    )
+                    {
+                        var bitOffs = subItems[1].BitOffs;
+                        var flags = subItems[1].Flags;
+                        var arrayInfo = arrayInfos[subItems[1].Type];
+
+                        subItems.RemoveAt(1);
+
+                        for (var k = arrayInfo.LBound; k < arrayInfo.LBound + arrayInfo.Elements; k++)
+                        {
+                            var subItem = new EtherCATInfoXmlSchema.SubItemType
+                            {
+                                SubIdx = $"{k}",
+                                Name = $"Element[{k - 1}]",
+                                Type = arrayInfo.BaseType,
+                                BitSize = arrayInfo.BitSize,
+                                BitOffs = bitOffs,
+                                Flags = flags,
+                            };
+                            subItems.Add(subItem);
+
+                            bitOffs += arrayInfo.BitSize;
+                        }
+                    }
+                }
+            }
+
+            return esi;
+        }
+
+        /// <summary>
         /// Upload handler for EtherCAT Slave Information (ESI) file on the path <c>upload/esi</c>. The 
         /// ESI file is converted to an <c>IEnumerable&lt;EtherCATDevice&gt;</c> collection of devices
         /// and returned to the caller on success.
@@ -98,11 +194,8 @@ namespace Configurator.Server.Controllers
         {
             try
             {
-                // TODO: Validate IFormFile input against XSD
-
-                // Deserialize XML
-                var serializer = new XmlSerializer(typeof(EtherCATInfoXmlSchema.EtherCATInfo));
-                var esi = (EtherCATInfoXmlSchema.EtherCATInfo)serializer.Deserialize(file.OpenReadStream());
+                // Deserialize an pre-process ESI
+                var esi = DeserializeEtherCATInfo(file.OpenReadStream());
 
                 // Parse devices
                 var devices = esi.Descriptions.Devices.Select(d => new EtherCATDevice
