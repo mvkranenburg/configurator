@@ -130,7 +130,12 @@ namespace Configurator.Server.Controllers
             // Expand SubItems referring to an ArrayInfo DataType
             for (var i = 0; i < esi.Descriptions.Devices.Count; i++)
             {
-                var dataTypes = esi.Descriptions.Devices[i].Profile.Single().Dictionary.DataTypes;
+                // Only continue if a Profile is defined
+                var profile = esi.Descriptions.Devices[i].Profile;
+                if (profile.Count == 0)
+                    continue;
+
+                var dataTypes = profile.Single().Dictionary.DataTypes;
                 var arrayInfos = dataTypes.Where(d => d.ArrayInfo.Count() > 0)
                     .Select(d => (d.Name, d.BaseType, d.BitSize, d.ArrayInfo.Single().LBound, d.ArrayInfo.Single().Elements))
                     .ToDictionary(d => d.Name);
@@ -207,7 +212,7 @@ namespace Configurator.Server.Controllers
                     Objects = new[]
                     {
                         // Add Dictionary objects
-                        d.Profile.FirstOrDefault()?.Dictionary.Objects.Select(o => new EtherCATObject
+                        d.Profile.SingleOrDefault()?.Dictionary.Objects.Select(o => new EtherCATObject
                         {
                             Index = (ushort)ParseHexDecValue(o.Index.Value),
                             Type = o.Type,
@@ -216,6 +221,16 @@ namespace Configurator.Server.Controllers
                             PdoMapping = ParsePdoMapping(o.Flags.PdoMapping),
                             Name = ParseNameType(o.Name),
                             Comment = ParseNameType(o.Comment),
+                            Objects = d.Profile.SingleOrDefault()?.Dictionary.DataTypes.Where(d => d.Name == o.Type).SingleOrDefault()?.SubItem.Select(s => new EtherCATObject
+                            {
+                                Index = (ushort)ParseHexDecValue(o.Index.Value),
+                                SubIndex = (byte)ParseHexDecValue(s.SubIdx),
+                                Type = s.Type,
+                                Access = ParseAccess(s.Flags.Access),
+                                PdoMapping = ParsePdoMapping(s.Flags.PdoMapping),
+                                Name = s.Name,
+                                Comment = ParseNameType(s.Comment)
+                            }),
                             Source = new EtherCATObjectSource
                             {
                                 Type = EtherCATObjectSourceType.Dictionary
