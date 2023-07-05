@@ -35,6 +35,8 @@ namespace Configurator.Server.Pages
         [Inject]
         protected AppDataService AppDataService { get; set; }
 
+        protected RadzenDataGrid<EtherCATObject> grid;
+
         protected void EtherCATObjectDataGridRender(DataGridRenderEventArgs<EtherCATObject> args)
         {
             if (args.FirstRender)
@@ -42,6 +44,21 @@ namespace Configurator.Server.Pages
                 args.Grid.Groups.Add(new GroupDescriptor() { Property = "Source", SortOrder = SortOrder.Ascending });
                 StateHasChanged();
             }
+        }
+
+        protected void EtherCATObjectDataGridRowRender(RowRenderEventArgs<EtherCATObject> args)
+        {
+            args.Expandable = args.Data.Objects.Count() > 0;
+        }
+
+        protected void EtherCATObjectDataGridRowCollapse()
+        {
+            grid.ColumnsCollection.ToList().ForEach(c => c.ClearFilters());
+        }
+
+        protected void EtherCATObjectDataGridLoadChildData(DataGridLoadChildDataEventArgs<EtherCATObject> args)
+        {
+            args.Data = args.Item.Objects;
         }
 
         protected async Task SelectDeviceClick(MouseEventArgs args)

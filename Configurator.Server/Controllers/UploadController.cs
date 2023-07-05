@@ -229,7 +229,11 @@ namespace Configurator.Server.Controllers
                                 Access = ParseAccess(s.Flags.Access),
                                 PdoMapping = ParsePdoMapping(s.Flags.PdoMapping),
                                 Name = s.Name,
-                                Comment = ParseNameType(s.Comment)
+                                Comment = ParseNameType(s.Comment),
+                                Source = new EtherCATObjectSource
+                                {
+                                    Type = EtherCATObjectSourceType.Dictionary
+                                },
                             }),
                             Source = new EtherCATObjectSource
                             {
