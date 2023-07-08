@@ -195,6 +195,10 @@ namespace Configurator.Server.Controllers
             {
                 return BadRequest($"XML syntax error: {ex.Message}");
             }
+            catch (System.Xml.Schema.XmlSchemaValidationException ex)
+            {
+                return BadRequest($"XML schema error: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal {ex.GetType().Name}: {ex.Message}");

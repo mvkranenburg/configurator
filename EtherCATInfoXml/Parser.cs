@@ -2,6 +2,7 @@ namespace EtherCATInfoXml;
 
 using System.Globalization;
 using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 public static class Parser
@@ -103,8 +104,16 @@ public static class Parser
     /// <exception cref="XmlException">Thrown when XML parsing fails.</exception>
     public static EtherCATInfo? Parse(Stream stream)
     {
+        var schema = new XmlSchemaSet();
+        schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATBase.xsd"));
+        schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATDiag.xsd"));
+        schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATDict.xsd"));
+        schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATInfo.xsd"));
+        schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATModule.xsd"));
+
         // Use System.Xml.Linq for schema validation and better error reporting
-        _ = XDocument.Load(stream);
+        var doc = XDocument.Load(stream);
+        doc.Validate(schema, null);
 
         // Use System.Xml.Serialization.XmlSerializer to parse the content
         var serializer = new XmlSerializer(typeof(EtherCATInfo));
