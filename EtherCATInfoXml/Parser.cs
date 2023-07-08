@@ -1,4 +1,4 @@
-namespace EtherCATInfoXmlSchema;
+namespace EtherCATInfoXml;
 
 using System.Globalization;
 using System.Xml.Linq;

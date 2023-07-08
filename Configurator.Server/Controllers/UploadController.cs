@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Configurator.Models;
-using static EtherCATInfoXmlSchema.Parser;
+using static EtherCATInfoXml.Parser;
 
 namespace Configurator.Server.Controllers
 {
@@ -29,7 +29,7 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">AccessType to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXmlSchema.AccessType access)
+        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXml.AccessType access)
         {
             return access.Value switch
             {
@@ -45,18 +45,18 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">ObjectTypeFlagsPdoMapping to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping pdoMapping)
+        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXml.ObjectTypeFlagsPdoMapping pdoMapping)
         {
             return pdoMapping switch
             {
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.R or
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.T or
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.RT or
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.TR or
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.Rt or
-                EtherCATInfoXmlSchema.ObjectTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.R or
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.T or
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.RT or
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.TR or
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.Rt or
+                EtherCATInfoXml.ObjectTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
                 _ => throw new ArgumentException("Invalid enum value for pdoMapping", nameof(pdoMapping)),
             };
         }
@@ -66,18 +66,18 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">SubItemTypeFlagsPdoMapping to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping pdoMapping)
+        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXml.SubItemTypeFlagsPdoMapping pdoMapping)
         {
             return pdoMapping switch
             {
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.R or
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.T or
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.RT or
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.TR or
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.Rt or
-                EtherCATInfoXmlSchema.SubItemTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.R or
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.T or
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.T1 => EtherCATObjectPdoMapping.TxPDO,
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.RT or
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.TR or
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.Rt or
+                EtherCATInfoXml.SubItemTypeFlagsPdoMapping.Tr => EtherCATObjectPdoMapping.TxAndRxPDO,
                 _ => throw new ArgumentException("Invalid enum value for pdoMapping", nameof(pdoMapping)),
             };
         }

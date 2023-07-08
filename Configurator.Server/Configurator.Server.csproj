@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Configurator.Models\Configurator.Models.csproj" />
-    <ProjectReference Include="..\EtherCATInfoXmlSchema\EtherCATInfoXmlSchema.csproj" />
+    <ProjectReference Include="..\EtherCATInfoXml\EtherCATInfoXml.csproj" />
   </ItemGroup>
 
 </Project>

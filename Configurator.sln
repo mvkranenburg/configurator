@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configurator.Server", "Conf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configurator.Models", "Configurator.Models\Configurator.Models.csproj", "{8A2F1BCF-CF53-4679-BD49-3203865D24E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtherCATInfoXmlSchema", "EtherCATInfoXmlSchema\EtherCATInfoXmlSchema.csproj", "{85CE4341-9B74-4351-990F-5BC2BAAC84C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtherCATInfoXml", "EtherCATInfoXml\EtherCATInfoXml.csproj", "{85CE4341-9B74-4351-990F-5BC2BAAC84C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configurator.Models.Test", "Configurator.Models.Test\Configurator.Models.Test.csproj", "{A3296EA2-C9C3-4CFF-88BB-3081F162036B}"
 EndProject

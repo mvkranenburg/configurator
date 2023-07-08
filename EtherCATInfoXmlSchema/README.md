@@ -1,2 +1,0 @@
-# EtherCATInfoXmlSchema
-`XmlSerializer` compatible C# model of the [EtherCAT Slave Information (ESI) Schema](https://ethercat.org/en/downloads/downloads_981F0A9A81044A878CE329DC8818F495.htm). The model is generated using [xscgen](https://www.nuget.org/packages/dotnet-xscgen) using the command as listed in the header of the generated source file.
