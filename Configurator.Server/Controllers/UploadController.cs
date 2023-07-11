@@ -29,10 +29,11 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">AccessType to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectAccess ParseAccess(EtherCATInfoXml.AccessType access)
+        private static EtherCATObjectAccess? ParseAccess(EtherCATInfoXml.AccessType? access)
         {
-            return access.Value switch
+            return access?.Value switch
             {
+                null => null,
                 "ro" => EtherCATObjectAccess.ReadOnly,
                 "rw" => EtherCATObjectAccess.ReadWrite,
                 "wo" => EtherCATObjectAccess.WriteOnly,
@@ -45,10 +46,11 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">ObjectTypeFlagsPdoMapping to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXml.ObjectTypeFlagsPdoMapping pdoMapping)
+        private static EtherCATObjectPdoMapping? ParsePdoMapping(EtherCATInfoXml.ObjectTypeFlagsPdoMapping? pdoMapping)
         {
             return pdoMapping switch
             {
+                null => null,
                 EtherCATInfoXml.ObjectTypeFlagsPdoMapping.R or
                 EtherCATInfoXml.ObjectTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
                 EtherCATInfoXml.ObjectTypeFlagsPdoMapping.T or
@@ -66,10 +68,11 @@ namespace Configurator.Server.Controllers
         /// </summary>
         /// <param name="access">SubItemTypeFlagsPdoMapping to parse.</param>
         /// <returns>Parsed value.</returns>
-        private static EtherCATObjectPdoMapping ParsePdoMapping(EtherCATInfoXml.SubItemTypeFlagsPdoMapping pdoMapping)
+        private static EtherCATObjectPdoMapping? ParsePdoMapping(EtherCATInfoXml.SubItemTypeFlagsPdoMapping? pdoMapping)
         {
             return pdoMapping switch
             {
+                null => null,
                 EtherCATInfoXml.SubItemTypeFlagsPdoMapping.R or
                 EtherCATInfoXml.SubItemTypeFlagsPdoMapping.R1 => EtherCATObjectPdoMapping.RxPDO,
                 EtherCATInfoXml.SubItemTypeFlagsPdoMapping.T or
@@ -98,7 +101,7 @@ namespace Configurator.Server.Controllers
                 var esi = Parse(file.OpenReadStream());
 
                 // Parse devices
-                var devices = esi.Descriptions.Devices.Select(d => new EtherCATDevice
+                var devices = esi?.Descriptions.Devices.Select(d => new EtherCATDevice
                 {
                     Type = d.Type.Value,
                     Name = ParseNameType(d.Name),
@@ -112,8 +115,8 @@ namespace Configurator.Server.Controllers
                             Index = (ushort)ParseHexDecValue(o.Index.Value),
                             Type = o.Type,
                             BitSize = o.BitSize,
-                            Access = ParseAccess(o.Flags.Access),
-                            PdoMapping = ParsePdoMapping(o.Flags.PdoMapping),
+                            Access = ParseAccess(o.Flags?.Access),
+                            PdoMapping = ParsePdoMapping(o.Flags?.PdoMapping),
                             Name = ParseNameType(o.Name),
                             Comment = ParseNameType(o.Comment),
                             Objects = d.Profile.SingleOrDefault()?.Dictionary.DataTypes.Where(d => d.Name == o.Type).SingleOrDefault()?.SubItem.Select(s => new EtherCATObject
@@ -129,7 +132,7 @@ namespace Configurator.Server.Controllers
                                 {
                                     Type = EtherCATObjectSourceType.Dictionary
                                 },
-                            }),
+                            }) ?? Enumerable.Empty<EtherCATObject>(),
                             Source = new EtherCATObjectSource
                             {
                                 Type = EtherCATObjectSourceType.Dictionary
@@ -176,8 +179,7 @@ namespace Configurator.Server.Controllers
                     }.SelectMany(o => o),
                 });
 
-                var numDevices = devices.Count();
-                if (numDevices <= 0)
+                if (devices == null || devices.Count() <= 0)
                     throw new XmlContentException("File contains no EtherCAT devices.");
 
                 return Ok(new UploadEsiResponse

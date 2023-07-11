@@ -15,27 +15,27 @@ namespace Configurator.Server.Pages
     public partial class ControllerDescription
     {
         [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        protected IJSRuntime JSRuntime { get; set; } = default!;
 
         [Inject]
-        protected NavigationManager NavigationManager { get; set; }
+        protected NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        protected DialogService DialogService { get; set; }
+        protected DialogService DialogService { get; set; } = default!;
 
         [Inject]
-        protected TooltipService TooltipService { get; set; }
+        protected TooltipService TooltipService { get; set; } = default!;
 
         [Inject]
-        protected ContextMenuService ContextMenuService { get; set; }
+        protected ContextMenuService ContextMenuService { get; set; } = default!;
 
         [Inject]
-        protected NotificationService NotificationService { get; set; }
+        protected NotificationService NotificationService { get; set; } = default!;
 
         [Inject]
-        protected AppDataService AppDataService { get; set; }
+        protected AppDataService AppDataService { get; set; } = default!;
 
-        protected RadzenDataGrid<EtherCATObject> grid;
+        protected RadzenDataGrid<EtherCATObject> grid = default!;
 
         protected void EtherCATObjectDataGridRender(DataGridRenderEventArgs<EtherCATObject> args)
         {
@@ -68,14 +68,14 @@ namespace Configurator.Server.Pages
                 new DialogOptions() { Width = "800px", Height = "600px", Resizable = true, Draggable = true });
         }
 
-        protected void SelectDeviceMouseEnter(ElementReference args, TooltipOptions options = null) => TooltipService.Open(args, "Select EtherCAT device", options);
+        protected void SelectDeviceMouseEnter(ElementReference args, TooltipOptions options) => TooltipService.Open(args, "Select EtherCAT device", options);
         protected void SelectDeviceMouseLeave(ElementReference args) => TooltipService.Close();
 
-        protected async Task SaveControllerClick(MouseEventArgs args)
+        protected void SaveControllerClick(MouseEventArgs args)
         {
         }
 
-        protected void SaveControllerMouseEnter(ElementReference args, TooltipOptions options = null) => TooltipService.Open(args, "Save controller description", options);
+        protected void SaveControllerMouseEnter(ElementReference args, TooltipOptions options) => TooltipService.Open(args, "Save controller description", options);
         protected void SaveControllerMouseLeave(ElementReference args) => TooltipService.Close();
     }
 }

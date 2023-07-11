@@ -10,25 +10,25 @@ namespace Configurator.Server.Pages
     public partial class SelectDeviceDialog
     {
         [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        protected IJSRuntime JSRuntime { get; set; } = default!;
 
         [Inject]
-        protected NavigationManager NavigationManager { get; set; }
+        protected NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        protected DialogService DialogService { get; set; }
+        protected DialogService DialogService { get; set; } = default!;
 
         [Inject]
-        protected TooltipService TooltipService { get; set; }
+        protected TooltipService TooltipService { get; set; } = default!;
 
         [Inject]
-        protected ContextMenuService ContextMenuService { get; set; }
+        protected ContextMenuService ContextMenuService { get; set; } = default!;
 
         [Inject]
-        protected NotificationService NotificationService { get; set; }
+        protected NotificationService NotificationService { get; set; } = default!;
 
         [Inject]
-        protected AppDataService AppDataService { get; set; }
+        protected AppDataService AppDataService { get; set; } = default!;
 
         IEnumerable<EtherCATDevice> devices = Enumerable.Empty<EtherCATDevice>();
 
@@ -44,7 +44,7 @@ namespace Configurator.Server.Pages
         string errorMessage = string.Empty;
 
         // Select device variables
-        string pagingSummaryFormat = "Page {0} of {1} ({2} devices)";
+        readonly string pagingSummaryFormat = "Page {0} of {1} ({2} devices)";
         IList<EtherCATDevice> selectedDevices = new List<EtherCATDevice>();
 
         void OnError(UploadErrorEventArgs args)
@@ -72,7 +72,8 @@ namespace Configurator.Server.Pages
                     {
                         PropertyNameCaseInsensitive = true
                     };
-                    var response = JsonSerializer.Deserialize<UploadEsiResponse>(args.RawResponse, options);
+                    var response = JsonSerializer.Deserialize<UploadEsiResponse>(args.RawResponse, options)
+                        ?? throw new NullReferenceException("Failed to deserialize response");
 
                     devices = response.Devices;
                     var numDevices = devices.Count();
@@ -109,7 +110,7 @@ namespace Configurator.Server.Pages
             cancelUpload = true;
         }
 
-        async Task OnSelectClick()
+        void OnSelectClick()
         {
             AppDataService.Device = selectedDevices.First();
             DialogService.Close(true);

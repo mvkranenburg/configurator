@@ -26,9 +26,9 @@ public static class Parser
     /// <param name="nameTypes">Collection of NameType to parse.</param>
     /// <param name="lcid">Language ID to parse, default is 1033 (English)</param>
     /// <returns>Parsed value.</returns>
-    public static string? ParseNameType(IEnumerable<NameType> nameTypes, int lcId = 1033)
+    public static string ParseNameType(IEnumerable<NameType> nameTypes, int lcId = 1033)
     {
-        return nameTypes.Where(n => n.LcId == lcId).SingleOrDefault()?.Value;
+        return nameTypes.Where(n => n.LcId == lcId).SingleOrDefault()?.Value ?? string.Empty;
     }
 
     private static void ExpandDataTypeSubItems(ref EtherCATInfo? esi)
@@ -111,14 +111,13 @@ public static class Parser
         schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATInfo.xsd"));
         schema.Add(null, Path.Combine(AppContext.BaseDirectory, @"XmlSchema/EtherCATModule.xsd"));
 
-        // Use System.Xml.Linq for schema validation and better error reporting
+        // Validate ESI file against XML Schema
         var doc = XDocument.Load(stream);
         doc.Validate(schema, null);
 
-        // Use System.Xml.Serialization.XmlSerializer to parse the content
-        var serializer = new XmlSerializer(typeof(EtherCATInfo));
-
+        // Deserialize ESI file to EtherCATInfo
         stream.Seek(0, SeekOrigin.Begin);
+        var serializer = new XmlSerializer(typeof(EtherCATInfo));
         var esi = (EtherCATInfo?)serializer.Deserialize(stream);
 
         // Expand SubItems referring to an ArrayInfo DataType
